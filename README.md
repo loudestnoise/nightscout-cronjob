@@ -15,24 +15,67 @@ Now, all you need to do is cat that file, which is waaaaay faster than a curl.
 Nightscout Website
 
 ## How To Install
-#### Deploy Cron Job
-Open up a shell
-Export two variables:
+
+There are two supported ways to run the background job that refreshes
+`~/glucose.txt`, depending on OS: `launchd` on macOS (via `deploy.sh`), or a
+plain crontab entry on Linux (no deploy script for this path yet — it's a
+few manual steps below).
+
+### macOS (launchd)
+Open up a shell and export two variables:
 ```bash
 export base_url='https://<your-url>.herokuapp.com'
 export script_dest='<your-path>/nightscoutcron.sh'
 ```
-Run the deploy script
+Run the deploy script:
 ```bash
 sh ./deploy.sh
 ```
-Verify its working as expected
+This generates `nightscoutcron.sh` and `com.dddiaz.nightscoutcron.plist` from
+their `.template` counterparts (substituting `base_url` and `script_dest`),
+copies the plist into `~/Library/LaunchAgents`, and loads it with
+`launchctl` — it fires immediately (`RunAtLoad`) and then every 300s.
+
+Verify it's working:
 ```bash
 cat ~/glucose.txt
 ```
 
-#### Set up your shell to display the Blood Glucose info
-Add the following line to your .zshrc file, make sure to reload it afterwards
+To pick up a change to `nightscoutcron.sh.template` (e.g. after a `git
+pull`), just re-export the same two variables and re-run `sh ./deploy.sh` —
+it regenerates the script and reloads the launchd job.
+
+### Linux (cron)
+No `deploy.sh` equivalent here yet — `launchd`-specific bits (the plist,
+`launchctl load`) don't apply, so it's a few manual steps instead of one
+script:
+
+1. Generate the script from the template, substituting your own Nightscout
+   URL for `base_url_replace`:
+   ```bash
+   sed "s+base_url_replace+https://<your-url>+g" nightscoutcron.sh.template > nightscoutcron.sh
+   chmod +x nightscoutcron.sh
+   ```
+2. Add a crontab entry to run it every minute:
+   ```bash
+   crontab -e
+   ```
+   ```cron
+   */1 * * * * sh /path/to/nightscout-cronjob/nightscoutcron.sh
+   ```
+3. Verify it's working:
+   ```bash
+   cat ~/glucose.txt
+   ```
+
+`nightscoutcron.sh` (and the macOS `.plist`) are gitignored since `sh ./deploy.sh` /
+the `sed` step above bake your real Nightscout URL and a local path into
+them — regenerate from the `.template` file on each machine rather than
+committing the generated file.
+
+### Set up your shell to display the Blood Glucose info
+Add the following line to your `.zshrc` file (same on macOS and Linux), then
+reload it:
 ```bash
 RPROMPT='$( echo "BG: " )$( cat ~/glucose.txt ) [%D{%m/%f/%y}|%@]'
 ```
