@@ -1,3 +1,15 @@
 echo "Last Cron Job Run: $( date +%H:%M )" > /tmp/nightscout.out
-BLOOD_GLUCOSE=$(BG=$(curl -s base_url_replace/api/v1/entries/current | awk {'print $3,$4'}) 2> /dev/null; if [ $? -eq 0 ]; then echo $BG; fi)
-echo "$BLOOD_GLUCOSE $( date +%H:%M )" > ~/glucose.txt
+RAW=$(curl -s base_url_replace/api/v1/entries/current 2> /dev/null)
+BLOOD_GLUCOSE=$(echo "$RAW" | awk '{print $3}')
+DIRECTION=$(echo "$RAW" | awk '{print $4}' | tr -d '"')
+case "$DIRECTION" in
+  DoubleUp) ARROW="⏫" ;;
+  SingleUp) ARROW="⬆️" ;;
+  FortyFiveUp) ARROW="↗️" ;;
+  Flat) ARROW="➡️" ;;
+  FortyFiveDown) ARROW="↘️" ;;
+  SingleDown) ARROW="⬇️" ;;
+  DoubleDown) ARROW="⏬" ;;
+  *) ARROW="❓" ;;
+esac
+echo "$BLOOD_GLUCOSE $ARROW @ $( date +%H:%M )" > ~/glucose.txt

@@ -1,0 +1,13 @@
+Nightscout trend direction -> emoji arrow reference
+(generated from the actual case statement in nightscoutcron.sh)
+=====================================================
+DoubleUp             ⏫
+SingleUp             ⬆️
+FortyFiveUp          ↗️
+Flat                 ➡️
+FortyFiveDown        ↘️
+SingleDown           ⬇️
+DoubleDown           ⏬
+NOT COMPUTABLE       ❓
+RATE OUT OF RANGE    ❓
+NONE                 ❓
