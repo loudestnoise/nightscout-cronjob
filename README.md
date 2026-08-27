@@ -14,6 +14,48 @@ Now, all you need to do is cat that file, which is waaaaay faster than a curl.
 ## Prereqs
 Nightscout Website
 
+## Quick Start (fresh Mac)
+Exact steps to go from a brand-new Mac to a working BG prompt. Replace
+`<your-nightscout-url>` and `<your-token>` with your real values (find your
+own Nightscout URL/token wherever you keep them — never commit them here).
+
+1. Clone the repo:
+   ```bash
+   git clone git@github.com:loudestnoise/nightscout-cronjob.git ~/dev/nightscout-cronjob
+   cd ~/dev/nightscout-cronjob
+   ```
+2. Export the two deploy variables in the *same shell* you'll run `deploy.sh`
+   in. `base_url` is the **full curl target** (path + token), not just the
+   domain:
+   ```bash
+   export base_url='https://<your-nightscout-url>/api/v1/entries/current?token=<your-token>'
+   export script_dest="$HOME/dev/nightscout-cronjob/nightscoutcron.sh"
+   ```
+3. Verify both actually took (no stray quotes/newlines from a bad paste):
+   ```bash
+   echo "[$base_url]"
+   echo "[$script_dest]"
+   ```
+4. Deploy — this generates `nightscoutcron.sh` + the launchd `.plist` from
+   their `.template` files, copies the plist to `~/Library/LaunchAgents`,
+   and loads it with `launchctl` (fires immediately, then every 60s):
+   ```bash
+   sh ./deploy.sh
+   ```
+5. Confirm it's actually writing real data (not blank/`❓`):
+   ```bash
+   cat ~/glucose.txt
+   ```
+6. Open `~/.zshrc` in an editor (don't paste multi-line `echo`/quoting
+   tricks into the shell — that's how this broke last time) and add this
+   line at the end, then open a new terminal to pick it up:
+   ```bash
+   RPROMPT='$( echo "BG: " )$( cat ~/glucose.txt ) [%D{%m/%f/%y}|%@]'
+   ```
+
+That's it — full details, the Linux/cron path, and troubleshooting notes are
+below.
+
 ## How To Install
 
 There are two supported ways to run the background job that refreshes
