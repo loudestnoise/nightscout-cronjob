@@ -1,6 +1,17 @@
 # Before you run, make sure you export your nightscout base url and where you want the script to go.
 # This is documented in the readme.
 
+if [ -z "$base_url" ]; then
+  echo "ERROR: \$base_url is not set/exported. Export it (full curl target, including" >&2
+  echo "the /api/v1/entries/current path and ?token=... if your instance needs auth)" >&2
+  echo "before running deploy.sh. Aborting to avoid silently baking in a broken URL." >&2
+  exit 1
+fi
+if [ -z "$script_dest" ]; then
+  echo "ERROR: \$script_dest is not set/exported. Aborting." >&2
+  exit 1
+fi
+
 # 1) Variable replace the plist file
 sed "s+script_dest_replace+$script_dest+g" ./com.dddiaz.nightscoutcron.plist.template > ./com.dddiaz.nightscoutcron.plist
 

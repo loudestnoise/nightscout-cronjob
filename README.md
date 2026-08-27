@@ -22,9 +22,11 @@ plain crontab entry on Linux (no deploy script for this path yet — it's a
 few manual steps below).
 
 ### macOS (launchd)
-Open up a shell and export two variables:
+Open up a shell and export two variables. `base_url` is the **full curl
+target** — not just the domain — so include the entries path and, if your
+Nightscout instance requires auth, the `?token=...` query param:
 ```bash
-export base_url='https://<your-url>.herokuapp.com'
+export base_url='https://<your-url>/api/v1/entries/current?token=<your-token>'
 export script_dest='<your-path>/nightscoutcron.sh'
 ```
 Run the deploy script:
@@ -35,6 +37,11 @@ This generates `nightscoutcron.sh` and `com.dddiaz.nightscoutcron.plist` from
 their `.template` counterparts (substituting `base_url` and `script_dest`),
 copies the plist into `~/Library/LaunchAgents`, and loads it with
 `launchctl` — it fires immediately (`RunAtLoad`) and then every 300s.
+
+`deploy.sh` now aborts with an error if `base_url` or `script_dest` aren't
+exported, rather than silently baking an empty string into the generated
+script (which produces a host-less `curl` call that fails silently forever —
+this bit us once already).
 
 Verify it's working:
 ```bash
@@ -50,10 +57,10 @@ No `deploy.sh` equivalent here yet — `launchd`-specific bits (the plist,
 `launchctl load`) don't apply, so it's a few manual steps instead of one
 script:
 
-1. Generate the script from the template, substituting your own Nightscout
-   URL for `base_url_replace`:
+1. Generate the script from the template, substituting the **full curl
+   target** (path + token, not just the domain) for `base_url_replace`:
    ```bash
-   sed "s+base_url_replace+https://<your-url>+g" nightscoutcron.sh.template > nightscoutcron.sh
+   sed "s+base_url_replace+https://<your-url>/api/v1/entries/current?token=<your-token>+g" nightscoutcron.sh.template > nightscoutcron.sh
    chmod +x nightscoutcron.sh
    ```
 2. Add a crontab entry to run it every minute:

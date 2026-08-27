@@ -1,5 +1,5 @@
 echo "Last Cron Job Run: $( date +%H:%M )" > /tmp/nightscout.out
-RAW=$(curl -s base_url_replace/api/v1/entries/current 2> /dev/null)
+RAW=$(curl -s base_url_replace 2> /dev/null)
 BLOOD_GLUCOSE=$(echo "$RAW" | awk '{print $3}')
 DIRECTION=$(echo "$RAW" | awk '{print $4}' | tr -d '"')
 case "$DIRECTION" in
