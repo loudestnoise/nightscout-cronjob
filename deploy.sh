@@ -34,7 +34,8 @@ cp ./nightscoutcron.sh $script_dest
 chmod +x $script_dest
 
 # Job in this folder will only run when logged in and under your user
-cp ./com.dddiaz.nightscoutcron.plist $HOME/Library/LaunchAgents
+mkdir -p $HOME/Library/LaunchAgents
+cp ./com.dddiaz.nightscoutcron.plist $HOME/Library/LaunchAgents/
 echo 'Copy complete!'
 
 echo 'Register and launching your job!'
