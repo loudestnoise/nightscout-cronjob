@@ -1,6 +1,6 @@
 # Nightscout Terminal
 
-![alt text](./images/full.png "Night Scout Terminal")
+![alt text](./images/full.png "Nightscout BG in the terminal prompt")
 
 ## Goal 
 Display blood glucose in terminal (specifically iterm2) without impeding performance.
