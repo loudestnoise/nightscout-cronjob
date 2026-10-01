@@ -10,8 +10,8 @@
     <string>script_dest_replace</string>
   </array>
 
-  <key>StartInterval</key>
-  <integer>60</integer>
+  <key>StartCalendarInterval</key>
+  <dict/>
 
   <key>RunAtLoad</key>
   <true/>
