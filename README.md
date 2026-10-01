@@ -38,7 +38,7 @@ own Nightscout URL/token wherever you keep them — never commit them here).
    ```
 4. Deploy — this generates `nightscoutcron.sh` + the launchd `.plist` from
    their `.template` files, copies the plist to `~/Library/LaunchAgents`,
-   and loads it with `launchctl` (fires immediately, then every 60s):
+   and loads it with `launchctl` (fires immediately, then at the start of every minute):
    ```bash
    sh ./deploy.sh
    ```
